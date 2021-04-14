@@ -1,10 +1,11 @@
 ## Modules
 
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-import load_foil
+from load_foil import load_foil
 
 ### Airfoil refinement
 
@@ -70,7 +71,6 @@ def splint(xa, ya, y2a, x):
     #Main dichotomy loop to find in which section x is
     while(khi - klo > 1):
         k = (khi + klo)//2
-        print(k)
         if(xa[k] > x):
             khi = k
         else:
@@ -92,15 +92,46 @@ def splint(xa, ya, y2a, x):
 
 # Montrer des courbes : ce qui marche et ce qui marche pas (histoire de voir ce qui fonctionne)
 
-def test__spline():
-    #Todo
+def test__spline_graph():
+    if len(sys.argv) == 1:
+        print( "Please provide an input file")
+        exit(1)
+    
+    # Cubic spline on extrados & intrados
+    (dim,ex,ey,ix,iy) = load_foil( sys.argv[1] )
+    de1 = (ey[1]-ey[0])/(ex[1]-ex[0])
+    de2 = (ey[-1]-ey[-2])/(ex[-1]-ex[-2])
+    di1 = (iy[1]-iy[0])/(ix[1]-ix[0])
+    di2 = (iy[-1]-iy[-2])/(ix[-1]-ix[-2])
+    extrados = spline(ex,ey,de1,de2)
+    intrados = spline(ix,iy,di1,di2)
+
+    # Nb of points multiplicator
+    N = 4
+
+    # New points computation
+    ex_new = np.linspace(ex[0],ex[-1],len(ex)*N)
+    ix_new = np.linspace(ix[0],ix[-1],len(ix)*N)
+    ey_new = [splint(ex,ey,extrados,k) for k in ex_new]
+    iy_new = [splint(ix,iy,intrados,k) for k in ix_new]
+
+    #Old graphs
+    plt.scatter(ex,ey, c='b')
+    plt.scatter(ix,iy, c='b')
+
+    #Interpolations
+    plt.scatter(ex_new, ey_new, c='r', marker='+')
+    plt.scatter(ix_new, iy_new, c='r', marker='+')
+
+    plt.show()
+
     return
 
 
 ## Main
 
 if __name__ == '__main__':
-    print(test__spline())
+    test__spline_graph()
 
 
 
