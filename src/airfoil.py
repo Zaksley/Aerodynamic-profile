@@ -86,6 +86,28 @@ def splint(xa, ya, y2a, x):
 
     return a*ya[klo] + b*ya[khi] + den
 
+# Foil interploation getter
+#
+# @param sys.argv[1] a .dat file with points coordinates
+#
+def get_foil_spline():
+    if len(sys.argv) == 1:
+        print( "Please provide an input file")
+        exit(1)
+
+    (dim,ex,ey,ix,iy) = load_foil( sys.argv[1] )
+
+    # First derivative computation
+    de1 = (ey[1]-ey[0])/(ex[1]-ex[0])
+    de2 = (ey[-1]-ey[-2])/(ex[-1]-ex[-2])
+    di1 = (iy[1]-iy[0])/(ix[1]-ix[0])
+    di2 = (iy[-1]-iy[-2])/(ix[-1]-ix[-2])
+
+    # Cubic spline on extrados & intrados
+    extrados = spline(ex,ey,de1,de2)
+    intrados = spline(ix,iy,di1,di2)
+
+    return (extrados, intrados, ex, ey, ix, iy)
 
 
 ## Tests
@@ -93,18 +115,8 @@ def splint(xa, ya, y2a, x):
 # Montrer des courbes : ce qui marche et ce qui marche pas (histoire de voir ce qui fonctionne)
 
 def test__spline_graph():
-    if len(sys.argv) == 1:
-        print( "Please provide an input file")
-        exit(1)
     
-    # Cubic spline on extrados & intrados
-    (dim,ex,ey,ix,iy) = load_foil( sys.argv[1] )
-    de1 = (ey[1]-ey[0])/(ex[1]-ex[0])
-    de2 = (ey[-1]-ey[-2])/(ex[-1]-ex[-2])
-    di1 = (iy[1]-iy[0])/(ix[1]-ix[0])
-    di2 = (iy[-1]-iy[-2])/(ix[-1]-ix[-2])
-    extrados = spline(ex,ey,de1,de2)
-    intrados = spline(ix,iy,di1,di2)
+    (extrados, intrados, ex, ey, ix, iy) = get_foil_spline()
 
     # Nb of points multiplicator
     N = 4
@@ -132,24 +144,3 @@ def test__spline_graph():
 
 if __name__ == '__main__':
     test__spline_graph()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
