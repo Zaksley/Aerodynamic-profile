@@ -9,7 +9,7 @@ def leftRectangleIntegration(f,start,end,iMax,epsilon):
     n = 1
     i = 1
     r1 = f(start)*(end-start)
-    r0 = r1+epsilon+1
+    r0 = r1+epsilon+1 #an arbitrary value to enter in the first iteration
     while (i<iMax and abs(r1-r0) > epsilon):
         r0 = r1
         r1 = 0.5*r0
@@ -66,3 +66,12 @@ def simpsonIntegration(f,start,end,iMax,epsilon):
         n = n*2
         i += 1
     return r1
+
+#calculation of the curve f between start and end
+#iMax and epsilon are the variables describe in the integration methods
+#integrate is the integration function that will be used
+
+def curveLength(f,start,end,iMax,epsilon,integrate):
+    derive = lambda x : (f(x+h)-f(x-h))/(2*h)
+    fline = lambda x : np.sqrt(1+derive(x)**2)
+    return integrate(fline,start,end,iMax,epsilon)
