@@ -71,7 +71,8 @@ def simpsonIntegration(f,start,end,iMax,epsilon):
 #iMax and epsilon are the variables describe in the integration methods
 #integrate is the integration function that will be used
 
-def curveLength(f,start,end,iMax,epsilon,integrate):
+
+def curveLength(f,h,start,end,iMax,epsilon,integrate):
     derive = lambda x : (f(x+h)-f(x-h))/(2*h)
     fline = lambda x : np.sqrt(1+derive(x)**2)
     return integrate(fline,start,end,iMax,epsilon)
