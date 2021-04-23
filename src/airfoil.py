@@ -112,14 +112,17 @@ def get_foil_spline():
 
 ## Tests
 
-# Montrer des courbes : ce qui marche et ce qui marche pas (histoire de voir ce qui fonctionne)
-
-def test__spline_graph():
+# Test on an unkown function (airfoil)
+#
+def test__spline_foil():
     
     (extrados, intrados, ex, ey, ix, iy) = get_foil_spline()
 
+    de1 = (ey[1]-ey[0])/(ex[1]-ex[0])
+    de2 = (ey[-1]-ey[-2])/(ex[-1]-ex[-2])
+
     # Nb of points multiplicator
-    N = 4
+    N = 100
 
     # New points computation
     ex_new = np.linspace(ex[0],ex[-1],len(ex)*N)
@@ -127,13 +130,44 @@ def test__spline_graph():
     ey_new = [splint(ex,ey,extrados,k) for k in ex_new]
     iy_new = [splint(ix,iy,intrados,k) for k in ix_new]
 
-    #Old graphs
+    # Points given
     plt.scatter(ex,ey, c='b')
     plt.scatter(ix,iy, c='b')
 
-    #Interpolations
-    plt.scatter(ex_new, ey_new, c='r', marker='+')
-    plt.scatter(ix_new, iy_new, c='r', marker='+')
+    # First interpolation
+    plt.plot(ex, ey, c='g')
+    plt.plot(ix, iy, c='g')
+
+    # Beter interpolations
+    plt.plot(ex_new, ey_new, c='r')
+    plt.plot(ix_new, iy_new, c='r')
+
+    plt.show()
+
+    return
+
+# Test on a known function (x^3)
+#
+def test__spline_knownfunc():
+
+    #Tests on x^3 :
+    ex = [k for k in np.linspace(0,1,10)]
+    ey = [(k**3) for k in ex]
+    de1 = 0
+    de2 = 3
+    extrados = spline(ex,ey,de1,de2)
+    better = [k for k in np.linspace(0,1,1000)]
+    bettery = [k**3 for k in better]
+
+    # Nb of points multiplicator
+    N = 100
+
+    # New points computation
+    ex_new = np.linspace(ex[0],ex[-1],len(ex)*N)
+    ey_new = [splint(ex,ey,extrados,k) for k in ex_new]
+
+    plt.plot(better, [abs(bettery[k] - ey_new[k]) for k in range(len(better))])
+    plt.yscale('log')
 
     plt.show()
 
@@ -143,4 +177,4 @@ def test__spline_graph():
 ## Main
 
 if __name__ == '__main__':
-    test__spline_graph()
+    test__spline_foil()
