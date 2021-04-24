@@ -39,12 +39,12 @@ def derivative(f, X):
         return (3*C[0]*x*x + 2*C[1]*x + C[2])
     return func
 
-def length_graph(f, X_down):
+def length_graph(f, X_down, integrate_func):
     fp = derivative(f, X_down)
     def func(x):
         f = sqrt(1+fp(x)*fp(x))
         return f 
-    return simpsonIntegration(func, 0, 1, 5, 10 ** -10)
+    return integrate_func(func, 0, 1, 5, 10 ** -10)
 
 def zero(x):
     return 0
@@ -67,8 +67,8 @@ def create_map(file):
 
     h_max = np.amax(Y_up)
     h_min = np.amin(Y_down)
-    l_max = length_graph(f_up, X_down)
-    l_min = length_graph(zero, X_down)
+    l_max = length_graph(f_up, X_up, simpsonIntegration)
+    l_min = length_graph(zero, X_down, simpsonIntegration)
     # ======
 
 
@@ -77,7 +77,7 @@ def create_map(file):
         def get_func(x):
             return f_lambda(f_up, h_max, l/size, x)
 
-        length = length_graph(get_func, X_up)
+        length = length_graph(get_func, X_up, simpsonIntegration)
         d = (length - l_min)/(l_max - l_min)
 
         for xi in Xp:
@@ -88,7 +88,7 @@ def create_map(file):
         def get_func(x):
             return f_lambda(f_down, h_min, l/size, x)
 
-        length = length_graph(get_func, X_down)
+        length = length_graph(get_func, X_down, simpsonIntegration)
         d = (length - l_min)/(l_max - l_min)
 
         for xi in Xp:
