@@ -86,6 +86,17 @@ def splint(xa, ya, y2a, x):
 
     return a*ya[klo] + b*ya[khi] + den
 
+# Returns the splint fonction t -> f(t)
+#
+# @param x array of x-coordinates
+# @param y array of y-coordinates
+# @param yp1 first derivative at point 1
+# @param ypn first derivative at point n
+def splint_f(x, y, yp1=0.0, ypn=0.0):
+
+    y2 = spline(x, y, yp1, ypn)
+    return lambda t: splint(x, y, y2, t)
+
 # Foil interploation getter
 #
 # @param sys.argv[1] a .dat file with points coordinates
